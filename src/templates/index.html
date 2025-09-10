@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Zauberohren - Interaktive Geschichten für Kinder">
     <meta name="theme-color" content="#5B63F5">
     <meta name="mobile-web-app-capable" content="yes">
@@ -50,6 +50,26 @@
     
     <main role="main">
         <section id="themes-grid" class="themes-grid" aria-label="Themenauswahl">
+            {% for theme in themes.keys() %}
+            <div class="theme-card" data-theme="{{ theme }}">
+                <div class="emoji">
+                    {% if theme == 'Piraten' %}🏴‍☠️
+                    {% elif theme == 'Drachen' %}🐉
+                    {% elif theme == 'Einhörner' %}🦄
+                    {% elif theme == 'Weltraum' %}🚀
+                    {% elif theme == 'Ritter' %}⚔️
+                    {% elif theme == 'Hexen' %}🧙‍♀️
+                    {% elif theme == 'Detektive' %}🔍
+                    {% elif theme == 'Grusel' %}👻
+                    {% elif theme == 'Dinosaurier' %}🦕
+                    {% elif theme == 'Elfen' %}🧚
+                    {% elif theme == 'Monster' %}👾
+                    {% elif theme == 'Weihnachten' %}🎄
+                    {% else %}📚{% endif %}
+                </div>
+                <div class="theme-title">{{ theme }}</div>
+            </div>
+            {% endfor %}
         </section>
     </main>
     
@@ -92,6 +112,9 @@
     
     <audio id="audio-element" preload="metadata"></audio>
     
+    <script>
+        window.themesData = {{ themes | tojson | safe }};
+    </script>
     <script src="/static/utils.js"></script>
     <script src="/static/burger-menu.js"></script>
     <script src="/static/main.js"></script>
