@@ -4,75 +4,102 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an experimental FastAPI-based web application with story generation capabilities using Google Cloud services and LLMs. The application includes text-to-speech functionality and serves content through a web interface.
+Zauberohren is a web application for AI-generated children's stories with text-to-speech capabilities. It's a FastAPI-based service that generates stories using LLMs and converts them to audio using Google Cloud Text-to-Speech.
 
 ## Commands
 
-### Run the server
+### Development Server
 ```bash
-# Development mode with auto-reload
-python src/server.py --reload --port 8000
+# Run development server with auto-reload on port 90
+python src/server.py --port 90 --reload
 
-# Production mode
-uvicorn src.server:app --host 0.0.0.0 --port 80 --workers 2
+# Or using uvicorn directly
+uvicorn src.server:app --host 0.0.0.0 --port 90 --reload
 ```
 
-### Run story generation
+### Story Generation
 ```bash
+# Batch generate stories for all themes
 python src/run.py
 ```
 
-### Install dependencies
+### Docker Operations
 ```bash
-pip install -r requirements.txt
+# Build Docker image
+docker build -t zauberohren:latest .
+
+# Run with Docker Compose (production)
+docker compose -f vm/docker-compose.yaml up -d
 ```
 
-### Docker operations
+### Deployment
 ```bash
-# Build container
-docker build -t experimental:latest .
-
-# Run container
-docker run -p 80:80 experimental:latest
+# Deploy to production server (Hetzner)
+cd vm && ./deploy.sh
 ```
 
 ## Architecture
 
 ### Core Components
 
-- **src/server.py**: FastAPI application entry point with static file serving and templating
-- **src/generator.py**: Story generation logic using LLM models
-- **src/tts.py**: Text-to-speech functionality using Google Cloud TTS
-- **src/llm.py**: LLM integration and API wrapper
-- **src/database.py**: SQLite database operations
-- **src/run.py**: Batch story generation with parallel processing
+**FastAPI Application (`src/server.py`)**
+- Main web server with routes for web interface and API endpoints
+- Serves static files and Jinja2 templates
+- Admin dashboard with basic auth at `/admin`
+- Audio streaming with HTTP Range support
 
-### Directory Structure
+**Services Architecture**
+- `audio_service.py`: Handles audio file streaming with range requests
+- `auth_service.py`: Admin authentication using environment variable PASSWORD
+- `db_service.py`: SQLite database for tracking playtime statistics
+- `tts.py`: Google Cloud Text-to-Speech integration
+- `llm.py`: LLM integration for story generation via LiteLLM
+- `generator.py`: Story generation orchestration
 
-- `/src`: Main application code
-- `/data`: Runtime data storage (database, cache)
-- `/src/static`: Static assets
-- `/src/templates`: Jinja2 templates
+**Story Generation Pipeline**
+1. LLM generates story text based on theme/parameters
+2. Text converted to speech using Google Cloud TTS
+3. Audio files stored locally in `data/` directory
+4. Database tracks metadata and playback statistics
 
-### Key Dependencies
+### Configuration
 
-- FastAPI with Uvicorn for web serving
-- Google Cloud Text-to-Speech and Storage
-- SQLite for data persistence
-- Concurrent processing with ProcessPoolExecutor
+**Environment Variables** (`.env`)
+- `PASSWORD`: Admin panel password
+- `LITELLM_MASTER_KEY`: API key for LiteLLM service
+- `DOMAIN_WRAPPER`: LiteLLM endpoint URL
 
-## Environment Configuration
+**Google Cloud** (`google.json`)
+- Service account credentials for Text-to-Speech and Storage APIs
+- Project: zalazium-gmbh
+- Bucket: gs://zalazium/
 
-Set PYTHONPATH when running locally:
-```bash
-export PYTHONPATH=/workspaces/experimental/src
-```
+### Production Infrastructure
 
-Required environment variables in `.env`:
-- GOOGLE_APPLICATION_CREDENTIALS: Path to Google Cloud credentials JSON
-- DOMAIN_WRAPPER: API endpoint for LLM wrapper
-- LITELLM_MASTER_KEY: Authentication key for LLM service
+**Docker Compose Stack** (`vm/docker-compose.yaml`)
+- Traefik: Reverse proxy with automatic SSL via Let's Encrypt
+- Zauberohren: Main application container
+- Watchtower: Automatic container updates from Docker Hub
 
-## Deployment
+**GitHub Actions** (`.github/workflows/deploy-main.yaml`)
+- Builds and pushes Docker image to Docker Hub on main branch push
+- Image: plaxtito/zauberohren:latest
 
-GitHub Actions workflow deploys to Docker Hub on push to main branch. The deployment builds and pushes a Docker image tagged as `latest`.
+## Key Implementation Details
+
+### Audio Streaming
+The application implements HTTP Range requests for audio streaming, allowing clients to seek within audio files and resume interrupted downloads.
+
+### Rate Limiting
+TTS requests are rate-limited to 90 requests per 60-second window to stay within Google Cloud quotas.
+
+### Database Schema
+SQLite database stores:
+- Story metadata (theme, title, audio path)
+- Playtime tracking with timestamps
+- Aggregated statistics for admin dashboard
+
+### Frontend
+- Static HTML/CSS/JS in `src/templates/` and `src/static/`
+- Progressive Web App with offline support (manifest.json)
+- Admin dashboard for viewing playtime statistics
