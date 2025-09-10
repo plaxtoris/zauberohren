@@ -13,12 +13,12 @@
     
     /* Neutral Colors */
     --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-muted: #9CA3AF;
+    --text-secondary: #4B5563;
+    --text-muted: #6B7280;
     --text-white: #FFFFFF;
     
-    --bg-primary: #F9FAFB;
-    --bg-secondary: #F3F4F6;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F9FAFB;
     --bg-white: #FFFFFF;
     --bg-dark: #111827;
     
@@ -147,7 +147,7 @@ a:hover {
     display: flex;
     align-items: center;
     backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
 }
 
 .header-top {
