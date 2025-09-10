@@ -1,4 +1,4 @@
-let themesData = window.themesData || {};
+let themesData = {};
 let currentTheme = null;
 let currentPlaylist = [];
 let lastPlayedIndex = -1;
@@ -25,11 +25,7 @@ const themeEmojis = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     audioElement = document.getElementById('audio-element');
-    // Themes are already loaded from server-side rendering
-    if (!window.themesData) {
-        await loadThemes();
-    }
-    attachThemeCardListeners();
+    await loadThemes();
     setupAudioPlayer();
 });
 
@@ -38,18 +34,9 @@ async function loadThemes() {
         const response = await fetch('/api/themes');
         themesData = await response.json();
         renderThemeCards();
-        attachThemeCardListeners();
     } catch (error) {
         console.error('Fehler beim Laden der Themen:', error);
     }
-}
-
-function attachThemeCardListeners() {
-    const cards = document.querySelectorAll('.theme-card');
-    cards.forEach(card => {
-        const theme = card.dataset.theme;
-        card.addEventListener('click', () => selectTheme(theme));
-    });
 }
 
 function renderThemeCards() {

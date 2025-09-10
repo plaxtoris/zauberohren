@@ -29,19 +29,7 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
     """Serve the main application page."""
-    # Pre-load themes for server-side rendering
-    data = db_service.get_data()
-    themes = {}
-    for item in data:
-        theme = item["theme"]
-        if theme not in themes:
-            themes[theme] = []
-        themes[theme].append({"titel": item["titel"], "path": item["path"]})
-    
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "themes": themes
-    })
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/impressum", response_class=HTMLResponse)
