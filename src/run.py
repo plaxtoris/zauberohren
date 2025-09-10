@@ -1,5 +1,6 @@
 from config import DEFAULT_TARGET_GROUP, DEFAULT_WORD_LIMIT, DEFAULT_MODEL, AVAILABLE_THEMES, DATA_DIR
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from collections import Counter
 from generator import generate
 from itertools import product
 from mutagen.mp3 import MP3
@@ -24,6 +25,12 @@ def clean_data():
     print(f"\nTotal: {total_duration/60:.1f} h")
 
 
+def count_data():
+    mp3_counts = Counter(p.parent.relative_to(DATA_DIR) for p in Path(DATA_DIR).rglob("*.mp3"))
+    for subdir, count in sorted(mp3_counts.items()):
+        print(f"{str(subdir):<20} {count} files")
+
+
 def generate_story(args):
     theme, i = args
     return generate(model=DEFAULT_MODEL, theme=theme, word_limit=DEFAULT_WORD_LIMIT, target_group=DEFAULT_TARGET_GROUP)
@@ -43,5 +50,6 @@ if __name__ == "__main__":
                 pbar.update(1)
     print(f"\n>>> Completed {len(tasks)} stories")
 
+    count_data()
     clean_data()
     print(f"\n>>> runtime {(time.time() - t0):.1f} sec\n\n")
