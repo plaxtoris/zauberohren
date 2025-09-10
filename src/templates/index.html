@@ -10,29 +10,65 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Zauberohren">
     <title>Zauberohren - Geschichten für dich</title>
+    
+    <!-- DNS-Prefetch und Preconnect für externe Ressourcen -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    
+    <!-- Preload kritische Ressourcen -->
+    <link rel="preload" href="/static/style.css" as="style">
+    <link rel="preload" href="/static/logo.jpeg" as="image" fetchpriority="high">
+    
+    <!-- Kritisches CSS inline für schnelleres FCP -->
+    <style>
+        :root {
+            --primary-color: #5B63F5;
+            --primary-hover: #4950E4;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --border-color: #E5E7EB;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --header-height: 72px;
+            --player-height: 88px;
+            --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-sans); font-size: 1rem; line-height: 1.5; color: var(--text-primary); background: var(--bg-primary); min-height: 100vh; padding-bottom: var(--player-height); }
+        h1 { font-weight: 600; line-height: 1.25; }
+        #player-header { position: sticky; top: 0; z-index: 1000; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); height: var(--header-height); }
+        .header-top { display: flex; align-items: center; justify-content: space-between; height: 100%; max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+        .logo-container { display: flex; align-items: center; gap: 0.75rem; }
+        .logo { width: 3rem; height: 3rem; border-radius: 0.75rem; object-fit: cover; }
+        .title-container h1 { font-size: 1.5rem; color: var(--primary-color); margin: 0; }
+        .subtitle { font-size: 0.875rem; color: var(--text-secondary); }
+        .themes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 2rem 1rem; max-width: 1280px; margin: 0 auto; }
+        .hidden { display: none !important; }
+        /* Burger Menu für Mobile */
+        .burger-menu { display: none; background: transparent; border: none; cursor: pointer; padding: 0.5rem; position: relative; width: 40px; height: 40px; }
+        .burger-line { display: block; position: absolute; width: 24px; height: 3px; background: var(--text-secondary); transition: all 200ms ease; border-radius: 2px; left: 8px; }
+        .burger-line:nth-child(1) { transform: translateY(-8px); }
+        .burger-line:nth-child(2) { transform: translateY(0); }
+        .burger-line:nth-child(3) { transform: translateY(8px); }
+        .header-links { display: flex; align-items: center; gap: 1rem; }
+        @media (max-width: 768px) { .burger-menu { display: flex; } .header-links { display: none; } }
+    </style>
+    
     <link rel="manifest" href="/static/manifest.json">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/static/logo.jpeg">
     <link rel="stylesheet" href="/static/style.css">
-
-    <!-- google adsense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9132200753480301" crossorigin="anonymous"></script>
 </head>
-
-<!-- google analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-N683YEPLY8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-N683YEPLY8');
-</script>
 
 <body>
     <header id="player-header">
         <div class="header-top">
             <div class="logo-container">
-                <img src="/static/logo.jpeg" alt="Zauberohren Logo" class="logo">
+                <img src="/static/logo.jpeg" alt="Zauberohren Logo" class="logo" loading="eager" fetchpriority="high" width="48" height="48">
                 <div class="title-container">
                     <h1>Zauberohren</h1>
                     <span class="subtitle">Geschichten für dich</span>
@@ -95,15 +131,30 @@
     
     <audio id="audio-element" preload="metadata"></audio>
     
-    <script src="/static/utils.js"></script>
-    <script src="/static/burger-menu.js"></script>
-    <script src="/static/main.js"></script>
+    <script defer src="/static/utils.js"></script>
+    <script defer src="/static/burger-menu.js"></script>
+    <script defer src="/static/main.js"></script>
+    
+    <!-- Google Analytics & AdSense nach unten verschoben -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N683YEPLY8"></script>
     <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N683YEPLY8');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9132200753480301" crossorigin="anonymous"></script>
+    
+    <script>
+        // Service Worker mit Verzögerung registrieren, um Initial Load nicht zu blockieren
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/service-worker.js')
-                    .then(registration => console.log('ServiceWorker registered'))
-                    .catch(err => console.log('ServiceWorker registration failed'));
+                // 2 Sekunden warten nach Page Load
+                setTimeout(() => {
+                    navigator.serviceWorker.register('/static/service-worker.js')
+                        .then(registration => console.log('ServiceWorker registered'))
+                        .catch(err => console.log('ServiceWorker registration failed'));
+                }, 2000);
             });
         }
     </script>
