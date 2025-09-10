@@ -3,10 +3,11 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from config import STATIC_DIR, TEMPLATES_DIR
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from audio_service import audio_service
 from auth_service import auth_service
 from db_service import db_service
+from icon_service import icon_service
 from dotenv import load_dotenv
 import argparse
 import uvicorn
@@ -85,6 +86,29 @@ async def track_play(data: dict):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to track playtime: {str(e)}")
+
+
+# Dynamic icon endpoints
+@app.get("/icon/{size}.png")
+async def get_icon(size: int):
+    """Generate PNG icon of specified size."""
+    if size not in [16, 32, 48, 64, 128, 192, 256, 512]:
+        raise HTTPException(status_code=400, detail="Invalid icon size")
+    try:
+        icon_data = icon_service.generate_icon(size, format="PNG")
+        return Response(content=icon_data, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate icon: {str(e)}")
+
+
+@app.get("/favicon.ico")
+async def get_favicon():
+    """Generate multi-resolution favicon."""
+    try:
+        favicon_data = icon_service.generate_favicon()
+        return Response(content=favicon_data, media_type="image/x-icon")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate favicon: {str(e)}")
 
 
 @app.get("/api/themes")

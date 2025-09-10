@@ -10,3 +10,4 @@ python-multipart
 google-cloud-texttospeech
 google-cloud-storage
 mutagen
+pillow

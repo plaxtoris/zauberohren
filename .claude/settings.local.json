@@ -17,8 +17,7 @@
       "Bash(uvicorn:*)",
       "Bash(mkdir:*)",
       "Bash(netstat:*)",
-      "Bash(pkill:*)",
-      "WebFetch(domain:pagespeed.web.dev)"
+      "Bash(pkill:*)"
     ],
     "deny": []
   }
