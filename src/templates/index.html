@@ -97,9 +97,6 @@
     
     <div id="audio-player" class="hidden" role="region" aria-label="Audio-Player">
         <div class="player-container">
-            <div class="player-title">
-                <span id="current-title">Kein Titel ausgewählt</span>
-            </div>
             <div class="player-main">
                 <button id="play-pause-btn" class="control-btn" aria-label="Play/Pause" type="button">
                     <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -116,9 +113,11 @@
                         <path d="M14 6v12l8-6z"/>
                     </svg>
                 </button>
-                <span class="time-display time-current" id="time-current">0:00</span>
-                <input type="range" id="seek-bar" min="0" max="100" value="0" step="0.1" aria-label="Wiedergabeposition">
-                <span class="time-display time-total" id="time-total">0:00</span>
+                <div class="seek-container">
+                    <span class="time-display time-current" id="time-current">0:00</span>
+                    <input type="range" id="seek-bar" min="0" max="100" value="0" step="0.1" aria-label="Wiedergabeposition">
+                    <span class="time-display time-total" id="time-total">0:00</span>
+                </div>
                 <button id="mute-btn" class="control-btn mute-btn" aria-label="Stummschalten" type="button">
                     <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
@@ -128,6 +127,9 @@
                     </svg>
                 </button>
                 <input type="range" id="volume-control" min="0" max="100" value="70" aria-label="Lautstärke">
+            </div>
+            <div class="player-title">
+                <span id="current-title">Kein Titel ausgewählt</span>
             </div>
         </div>
     </div>
