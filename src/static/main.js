@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     audioElement = document.getElementById('audio-element');
     await loadThemes();
     setupAudioPlayer();
+    
+    // Automatically select a random theme and story on page load
+    selectRandomThemeAndStory();
 });
 
 async function loadThemes() {
@@ -62,6 +65,43 @@ function renderThemeCards() {
         card.addEventListener('click', () => selectTheme(theme));
         grid.appendChild(card);
     });
+}
+
+function selectRandomThemeAndStory() {
+    const themes = Object.keys(themesData);
+    if (themes.length === 0) return;
+    
+    // Select a random theme
+    const randomThemeIndex = Math.floor(Math.random() * themes.length);
+    const randomTheme = themes[randomThemeIndex];
+    
+    // Activate the theme card visually
+    const selectedCard = document.querySelector(`[data-theme="${randomTheme}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('active');
+    }
+    
+    // Set the current theme and playlist
+    currentTheme = randomTheme;
+    currentPlaylist = themesData[randomTheme];
+    lastPlayedIndex = -1;
+    
+    // Load a random story from this theme (but don't play it yet)
+    if (currentPlaylist && currentPlaylist.length > 0) {
+        const randomIndex = Math.floor(Math.random() * currentPlaylist.length);
+        lastPlayedIndex = randomIndex;
+        const story = currentPlaylist[randomIndex];
+        
+        const audioUrl = `/api/audio/${currentTheme}/${encodeURIComponent(story.titel)}`;
+        audioElement.src = audioUrl;
+        
+        currentTitle = story.titel;
+        document.getElementById('current-title').textContent = story.titel;
+        document.getElementById('audio-player').classList.remove('hidden');
+        
+        // Don't start playing automatically - user must press play
+        updatePlayPauseButton(false);
+    }
 }
 
 function selectTheme(theme) {
