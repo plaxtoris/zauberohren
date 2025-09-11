@@ -1,9 +1,9 @@
+from fastapi.responses import HTMLResponse, Response, PlainTextResponse
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from config import STATIC_DIR, TEMPLATES_DIR
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, Response
 from audio_service import audio_service
 from auth_service import auth_service
 from db_service import db_service
@@ -43,6 +43,11 @@ async def impressum(request: Request):
 async def about(request: Request):
     """Serve the about page."""
     return templates.TemplateResponse("about.html", {"request": request})
+
+
+@app.get("/ads.txt", response_class=PlainTextResponse)
+async def ads_txt():
+    return "google.com, pub-9132200753480301, DIRECT, f08c47fec0942fa0"
 
 
 @app.get("/admin", response_class=HTMLResponse)
