@@ -50,6 +50,26 @@ async def ads_txt():
     return "google.com, pub-9132200753480301, DIRECT, f08c47fec0942fa0"
 
 
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def robots_txt():
+    """Serve robots.txt for search engines."""
+    try:
+        with open(STATIC_DIR / "robots.txt", "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="robots.txt not found")
+
+
+@app.get("/sitemap.xml", response_class=Response)
+async def sitemap_xml():
+    """Serve sitemap.xml for search engines."""
+    try:
+        with open(STATIC_DIR / "sitemap.xml", "r") as f:
+            return Response(content=f.read(), media_type="application/xml")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="sitemap.xml not found")
+
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
     """Serve the admin dashboard page."""
