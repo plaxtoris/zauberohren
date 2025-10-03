@@ -355,11 +355,20 @@ main {
     justify-content: center;
     cursor: pointer;
     transition: all var(--transition-base);
+    position: relative;
+    z-index: 5;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .play-btn:hover, .next-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.1);
+}
+
+.play-btn:active, .next-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .play-btn svg, .next-btn svg {
@@ -395,10 +404,17 @@ main {
     z-index: 10;
     cursor: pointer;
     transition: all var(--transition-base);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .swipe-indicator:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+.swipe-indicator:active {
+    transform: translateY(-50%) scale(0.95);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .swipe-indicator.left {

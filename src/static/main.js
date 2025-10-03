@@ -9,8 +9,12 @@ let playStartTime = null;
 let currentTitle = null;
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+let touchStartTime = 0;
 let themesArray = [];
 let isTransitioning = false;
+let isDragging = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     audioElement = document.getElementById('audio-element');
@@ -128,38 +132,70 @@ function setupSwipeListeners() {
     const leftIndicator = document.querySelector('.swipe-indicator.left');
     const rightIndicator = document.querySelector('.swipe-indicator.right');
 
-    // Touch events
-    carousel.addEventListener('touchstart', handleTouchStart, {passive: true});
-    carousel.addEventListener('touchmove', handleTouchMove, {passive: true});
+    // Touch events with better click detection
+    carousel.addEventListener('touchstart', handleTouchStart, {passive: false});
+    carousel.addEventListener('touchmove', handleTouchMove, {passive: false});
     carousel.addEventListener('touchend', handleTouchEnd);
 
-    // Mouse events for desktop
+    // Mouse events for desktop with drag detection
     let mouseDown = false;
     carousel.addEventListener('mousedown', (e) => {
+        // Ignore if clicking on buttons or controls
+        if (e.target.closest('.play-btn') || e.target.closest('.next-btn') ||
+            e.target.closest('.swipe-indicator')) {
+            return;
+        }
+
         mouseDown = true;
+        isDragging = false;
         touchStartX = e.clientX;
+        touchStartY = e.clientY;
+        touchStartTime = Date.now();
+        e.preventDefault();
     });
 
     carousel.addEventListener('mousemove', (e) => {
         if (mouseDown) {
-            touchEndX = e.clientX;
+            const deltaX = Math.abs(e.clientX - touchStartX);
+            const deltaY = Math.abs(e.clientY - touchStartY);
+
+            // Mark as dragging if moved more than 10px
+            if (deltaX > 10 || deltaY > 10) {
+                isDragging = true;
+                touchEndX = e.clientX;
+                touchEndY = e.clientY;
+                e.preventDefault();
+            }
         }
     });
 
-    carousel.addEventListener('mouseup', () => {
+    carousel.addEventListener('mouseup', (e) => {
         if (mouseDown) {
             mouseDown = false;
-            handleSwipe();
+
+            // Only handle swipe if we were dragging
+            if (isDragging) {
+                handleSwipe();
+            }
+            isDragging = false;
         }
     });
 
     carousel.addEventListener('mouseleave', () => {
         mouseDown = false;
+        isDragging = false;
     });
 
-    // Click indicators
-    leftIndicator.addEventListener('click', () => navigateTheme(-1));
-    rightIndicator.addEventListener('click', () => navigateTheme(1));
+    // Click indicators with stopPropagation
+    leftIndicator.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateTheme(-1);
+    });
+
+    rightIndicator.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateTheme(1);
+    });
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -169,22 +205,63 @@ function setupSwipeListeners() {
 }
 
 function handleTouchStart(e) {
+    // Ignore if touching buttons or controls
+    if (e.target.closest('.play-btn') || e.target.closest('.next-btn') ||
+        e.target.closest('.swipe-indicator')) {
+        return;
+    }
+
     touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+    isDragging = false;
 }
 
 function handleTouchMove(e) {
+    if (!touchStartX) return;
+
     touchEndX = e.touches[0].clientX;
+    touchEndY = e.touches[0].clientY;
+
+    const deltaX = Math.abs(touchEndX - touchStartX);
+    const deltaY = Math.abs(touchEndY - touchStartY);
+
+    // If horizontal movement is greater than vertical, it's a swipe
+    if (deltaX > 10 && deltaX > deltaY) {
+        isDragging = true;
+        e.preventDefault(); // Prevent scrolling
+    }
 }
 
-function handleTouchEnd() {
-    handleSwipe();
+function handleTouchEnd(e) {
+    if (!touchStartX) return;
+
+    // Only handle swipe if we were dragging
+    if (isDragging) {
+        handleSwipe();
+    }
+
+    // Reset
+    touchStartX = 0;
+    touchStartY = 0;
+    isDragging = false;
 }
 
 function handleSwipe() {
     const swipeDistance = touchStartX - touchEndX;
-    const minSwipeDistance = 50;
+    const verticalDistance = Math.abs(touchStartY - touchEndY);
+    const minSwipeDistance = 80; // Increased from 50 to 80
+    const maxVerticalDistance = 100; // Max vertical movement allowed
+    const swipeTime = Date.now() - touchStartTime;
+    const maxSwipeTime = 500; // Max 500ms for a swipe
 
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
+    // Only register as swipe if:
+    // 1. Horizontal distance is enough
+    // 2. Vertical distance is not too much (to avoid diagonal swipes)
+    // 3. Swipe was quick enough
+    if (Math.abs(swipeDistance) > minSwipeDistance &&
+        verticalDistance < maxVerticalDistance &&
+        swipeTime < maxSwipeTime) {
         if (swipeDistance > 0) {
             navigateTheme(1); // Swipe left - next theme
         } else {
