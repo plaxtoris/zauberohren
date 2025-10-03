@@ -2,7 +2,7 @@ from fastapi.responses import HTMLResponse, Response, PlainTextResponse
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
-from config import STATIC_DIR, TEMPLATES_DIR
+from config import STATIC_DIR, TEMPLATES_DIR, DATA_DIR
 from fastapi.staticfiles import StaticFiles
 from audio_service import audio_service
 from auth_service import auth_service
@@ -16,6 +16,7 @@ load_dotenv()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+app.mount("/data", StaticFiles(directory=str(DATA_DIR)), name="data")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # Authentication

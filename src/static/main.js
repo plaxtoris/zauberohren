@@ -1,281 +1,332 @@
 let themesData = {};
+let currentThemeIndex = 0;
 let currentTheme = null;
 let currentPlaylist = [];
 let lastPlayedIndex = -1;
 let audioElement = null;
 let isPlaying = false;
-let previousVolume = 0.7;
 let playStartTime = null;
 let currentTitle = null;
-
-const themeEmojis = {
-    'Piraten': '🏴‍☠️',
-    'Drachen': '🐉',
-    'Einhörner': '🦄',
-    'Weltraum': '🚀',
-    'Ritter': '⚔️',
-    'Hexen': '🧙‍♀️',
-    'Detektive': '🔍',
-    'Grusel': '👻',
-    'Dinosaurier': '🦕',
-    'Elfen': '🧚',
-    'Monster': '👾',
-    'Weihnachten': '🎄'
-};
+let touchStartX = 0;
+let touchEndX = 0;
+let themesArray = [];
+let isTransitioning = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     audioElement = document.getElementById('audio-element');
     await loadThemes();
-    setupAudioPlayer();
-    
-    // Automatically select a random theme and story on page load
-    selectRandomThemeAndStory();
+    setupSwipeListeners();
+    setupPlayerControls();
 });
 
 async function loadThemes() {
     try {
         const response = await fetch('/api/themes');
         themesData = await response.json();
-        renderThemeCards();
+        themesArray = Object.keys(themesData);
+        renderThemeSlides();
+
+        // Start at position 1 because of clone at position 0
+        const container = document.getElementById('themes-container');
+        container.style.transform = `translateX(-100%)`;
+        container.style.transition = 'none';
+
+        selectRandomStory(currentThemeIndex);
     } catch (error) {
         console.error('Fehler beim Laden der Themen:', error);
     }
 }
 
-function renderThemeCards() {
-    const grid = document.getElementById('themes-grid');
-    grid.innerHTML = '';
-    
-    Object.keys(themesData).forEach(theme => {
-        const card = document.createElement('div');
-        card.className = 'theme-card';
-        card.dataset.theme = theme;
-        
-        const emoji = document.createElement('div');
-        emoji.className = 'emoji';
-        emoji.textContent = themeEmojis[theme] || '📚';
-        
-        const title = document.createElement('div');
-        title.className = 'theme-title';
-        title.textContent = theme;
-        
-        card.appendChild(emoji);
-        card.appendChild(title);
-        
-        card.addEventListener('click', () => selectTheme(theme));
-        grid.appendChild(card);
+function renderThemeSlides() {
+    const container = document.getElementById('themes-container');
+    container.innerHTML = '';
+
+    // Helper function to create a slide
+    const createSlide = (theme, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'theme-slide';
+        slide.dataset.theme = theme;
+        slide.dataset.index = index;
+
+        // Set background image
+        const imagePath = `/data/${theme}/image.jpg`;
+        slide.style.backgroundImage = `url('${imagePath}')`;
+
+        const content = document.createElement('div');
+        content.className = 'theme-content';
+
+        const nameEl = document.createElement('h2');
+        nameEl.className = 'theme-name';
+        nameEl.textContent = theme;
+
+        const storyEl = document.createElement('p');
+        storyEl.className = 'current-story';
+        storyEl.id = `story-${index}`;
+        storyEl.textContent = 'Geschichte wird geladen...';
+
+        const controls = document.createElement('div');
+        controls.className = 'player-controls';
+
+        const playBtn = document.createElement('button');
+        playBtn.className = 'play-btn';
+        playBtn.id = `play-${index}`;
+        playBtn.innerHTML = `
+            <svg class="play-icon" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="pause-icon hidden" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+            </svg>
+        `;
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'next-btn';
+        nextBtn.id = `next-${index}`;
+        nextBtn.innerHTML = `
+            <svg viewBox="0 0 24 24">
+                <path d="M6 6v12l8-6z"/>
+                <path d="M14 6v12l8-6z"/>
+            </svg>
+        `;
+
+        controls.appendChild(playBtn);
+        controls.appendChild(nextBtn);
+
+        content.appendChild(nameEl);
+        content.appendChild(storyEl);
+        content.appendChild(controls);
+
+        slide.appendChild(content);
+
+        // Add event listeners
+        playBtn.addEventListener('click', () => togglePlayPause(index));
+        nextBtn.addEventListener('click', () => playNextStory(index));
+
+        return slide;
+    };
+
+    // Add all slides
+    themesArray.forEach((theme, index) => {
+        container.appendChild(createSlide(theme, index));
+    });
+
+    // Clone first and last slides for seamless transition
+    if (themesArray.length > 0) {
+        const firstClone = createSlide(themesArray[0], 0);
+        firstClone.classList.add('clone');
+        const lastClone = createSlide(themesArray[themesArray.length - 1], themesArray.length - 1);
+        lastClone.classList.add('clone');
+
+        container.appendChild(firstClone);
+        container.insertBefore(lastClone, container.firstChild);
+    }
+}
+
+function setupSwipeListeners() {
+    const carousel = document.getElementById('theme-carousel');
+    const leftIndicator = document.querySelector('.swipe-indicator.left');
+    const rightIndicator = document.querySelector('.swipe-indicator.right');
+
+    // Touch events
+    carousel.addEventListener('touchstart', handleTouchStart, {passive: true});
+    carousel.addEventListener('touchmove', handleTouchMove, {passive: true});
+    carousel.addEventListener('touchend', handleTouchEnd);
+
+    // Mouse events for desktop
+    let mouseDown = false;
+    carousel.addEventListener('mousedown', (e) => {
+        mouseDown = true;
+        touchStartX = e.clientX;
+    });
+
+    carousel.addEventListener('mousemove', (e) => {
+        if (mouseDown) {
+            touchEndX = e.clientX;
+        }
+    });
+
+    carousel.addEventListener('mouseup', () => {
+        if (mouseDown) {
+            mouseDown = false;
+            handleSwipe();
+        }
+    });
+
+    carousel.addEventListener('mouseleave', () => {
+        mouseDown = false;
+    });
+
+    // Click indicators
+    leftIndicator.addEventListener('click', () => navigateTheme(-1));
+    rightIndicator.addEventListener('click', () => navigateTheme(1));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') navigateTheme(-1);
+        if (e.key === 'ArrowRight') navigateTheme(1);
     });
 }
 
-function selectRandomThemeAndStory() {
-    const themes = Object.keys(themesData);
-    if (themes.length === 0) return;
-    
-    // Select a random theme
-    const randomThemeIndex = Math.floor(Math.random() * themes.length);
-    const randomTheme = themes[randomThemeIndex];
-    
-    // Activate the theme card visually
-    const selectedCard = document.querySelector(`[data-theme="${randomTheme}"]`);
-    if (selectedCard) {
-        selectedCard.classList.add('active');
+function handleTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+}
+
+function handleTouchMove(e) {
+    touchEndX = e.touches[0].clientX;
+}
+
+function handleTouchEnd() {
+    handleSwipe();
+}
+
+function handleSwipe() {
+    const swipeDistance = touchStartX - touchEndX;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+            navigateTheme(1); // Swipe left - next theme
+        } else {
+            navigateTheme(-1); // Swipe right - previous theme
+        }
     }
-    
-    // Set the current theme and playlist
-    currentTheme = randomTheme;
-    currentPlaylist = themesData[randomTheme];
-    lastPlayedIndex = -1;
-    
-    // Load a random story from this theme (but don't play it yet)
-    if (currentPlaylist && currentPlaylist.length > 0) {
-        const randomIndex = Math.floor(Math.random() * currentPlaylist.length);
-        lastPlayedIndex = randomIndex;
-        const story = currentPlaylist[randomIndex];
-        
-        const audioUrl = `/api/audio/${currentTheme}/${encodeURIComponent(story.titel)}`;
+}
+
+function navigateTheme(direction) {
+    if (isTransitioning) return;
+
+    // Track playtime before switching
+    trackPlaytime();
+
+    isTransitioning = true;
+    const container = document.getElementById('themes-container');
+
+    // Calculate visual position (including clone offset)
+    let visualIndex = currentThemeIndex + 1; // +1 because of clone at start
+    visualIndex += direction;
+
+    // Animate to new position
+    container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    container.style.transform = `translateX(-${visualIndex * 100}%)`;
+
+    // Update logical index
+    currentThemeIndex += direction;
+
+    // Handle wrap-around logic after animation
+    setTimeout(() => {
+        container.style.transition = 'none';
+
+        if (currentThemeIndex < 0) {
+            currentThemeIndex = themesArray.length - 1;
+            container.style.transform = `translateX(-${themesArray.length * 100}%)`;
+        } else if (currentThemeIndex >= themesArray.length) {
+            currentThemeIndex = 0;
+            container.style.transform = `translateX(-100%)`;
+        }
+
+        isTransitioning = false;
+    }, 300);
+
+    // Update current theme data
+    currentTheme = themesArray[currentThemeIndex];
+    currentPlaylist = themesData[currentTheme];
+
+    // Stop current audio
+    if (!audioElement.paused) {
+        audioElement.pause();
+        updatePlayPauseButton(currentThemeIndex, false);
+    }
+
+    // Load new story
+    selectRandomStory(currentThemeIndex);
+}
+
+function selectRandomStory(themeIndex) {
+    const theme = themesArray[themeIndex];
+    const playlist = themesData[theme];
+
+    if (!playlist || playlist.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * playlist.length);
+    const story = playlist[randomIndex];
+
+    // Update story display
+    const storyEl = document.getElementById(`story-${themeIndex}`);
+    if (storyEl) {
+        storyEl.textContent = story.titel;
+    }
+
+    // Prepare audio but don't play
+    if (themeIndex === currentThemeIndex) {
+        const audioUrl = `/api/audio/${theme}/${encodeURIComponent(story.titel)}`;
         audioElement.src = audioUrl;
-        
         currentTitle = story.titel;
-        document.getElementById('current-title').textContent = story.titel;
-        document.getElementById('audio-player').classList.remove('hidden');
-        
-        // Don't start playing automatically - user must press play
-        updatePlayPauseButton(false);
+        lastPlayedIndex = randomIndex;
     }
 }
 
-function selectTheme(theme) {
-    const cards = document.querySelectorAll('.theme-card');
-    cards.forEach(card => card.classList.remove('active'));
-    
-    if (currentTheme === theme) {
-        currentTheme = null;
-        currentPlaylist = [];
-        stopPlayback();
-        return;
-    }
-    
-    const selectedCard = document.querySelector(`[data-theme="${theme}"]`);
-    selectedCard.classList.add('active');
-    
-    currentTheme = theme;
-    currentPlaylist = themesData[theme];
-    lastPlayedIndex = -1;
-    
-    playRandomStory();
-}
+function playNextStory(themeIndex) {
+    if (themeIndex !== currentThemeIndex) return;
 
-function playRandomStory() {
-    if (!currentPlaylist || currentPlaylist.length === 0) return;
-    
+    const theme = themesArray[themeIndex];
+    const playlist = themesData[theme];
+
+    if (!playlist || playlist.length === 0) return;
+
     // Track current playtime before switching
     trackPlaytime();
-    
-    let randomIndex;
-    if (currentPlaylist.length === 1) {
-        randomIndex = 0;
+
+    let newIndex;
+    if (playlist.length === 1) {
+        newIndex = 0;
     } else {
         do {
-            randomIndex = Math.floor(Math.random() * currentPlaylist.length);
-        } while (randomIndex === lastPlayedIndex);
+            newIndex = Math.floor(Math.random() * playlist.length);
+        } while (newIndex === lastPlayedIndex);
     }
-    
-    lastPlayedIndex = randomIndex;
-    const story = currentPlaylist[randomIndex];
-    
-    const audioUrl = `/api/audio/${currentTheme}/${encodeURIComponent(story.titel)}`;
+
+    lastPlayedIndex = newIndex;
+    const story = playlist[newIndex];
+
+    // Update story display
+    const storyEl = document.getElementById(`story-${themeIndex}`);
+    if (storyEl) {
+        storyEl.textContent = story.titel;
+    }
+
+    // Load and play new story
+    const audioUrl = `/api/audio/${theme}/${encodeURIComponent(story.titel)}`;
     audioElement.src = audioUrl;
-    
     currentTitle = story.titel;
-    document.getElementById('current-title').textContent = story.titel;
-    document.getElementById('audio-player').classList.remove('hidden');
-    
-    // Reset playStartTime before playing new track
     playStartTime = null;
     audioElement.play();
-    updatePlayPauseButton(true);
+    updatePlayPauseButton(themeIndex, true);
 }
 
-// formatTime function is now imported from utils.js
+function togglePlayPause(themeIndex) {
+    if (themeIndex !== currentThemeIndex) return;
 
-function setupAudioPlayer() {
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const seekBar = document.getElementById('seek-bar');
-    const volumeControl = document.getElementById('volume-control');
-    const shuffleBtn = document.getElementById('shuffle-btn');
-    const muteBtn = document.getElementById('mute-btn');
-    const timeCurrent = document.getElementById('time-current');
-    const timeTotal = document.getElementById('time-total');
-    
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    
-    shuffleBtn.addEventListener('click', () => {
-        if (currentTheme && currentPlaylist.length > 0) {
-            playRandomStory();
-        }
-    });
-    
-    audioElement.addEventListener('timeupdate', () => {
-        if (audioElement.duration && !isNaN(audioElement.duration)) {
-            const progress = (audioElement.currentTime / audioElement.duration) * 100;
-            seekBar.value = progress;
-            // Update visual progress indicator
-            seekBar.style.setProperty('--progress', progress + '%');
-            
-            timeCurrent.textContent = formatTime(audioElement.currentTime);
-            timeTotal.textContent = formatTime(audioElement.duration);
-        }
-    });
-    
-    audioElement.addEventListener('loadedmetadata', () => {
-        seekBar.disabled = false;
-    });
-    
-    audioElement.addEventListener('ended', () => {
-        trackPlaytime();
-        if (currentTheme) {
-            playRandomStory();
-        }
-    });
-    
-    audioElement.addEventListener('play', () => {
-        updatePlayPauseButton(true);
-        // Only set playStartTime if it's not already set
-        if (!playStartTime) {
-            playStartTime = Date.now();
-        }
-    });
-    
-    audioElement.addEventListener('pause', () => {
-        updatePlayPauseButton(false);
-        trackPlaytime();
-    });
-    
-    seekBar.addEventListener('input', (e) => {
-        if (audioElement.duration && !isNaN(audioElement.duration)) {
-            const seekTo = (parseFloat(e.target.value) / 100) * audioElement.duration;
-            audioElement.currentTime = seekTo;
-            // Update visual progress indicator
-            seekBar.style.setProperty('--progress', e.target.value + '%');
-        }
-    });
-    
-    volumeControl.addEventListener('input', (e) => {
-        audioElement.volume = e.target.value / 100;
-        // Update visual volume indicator
-        volumeControl.style.setProperty('--volume', e.target.value + '%');
-        if (audioElement.volume > 0) {
-            previousVolume = audioElement.volume;
-            updateMuteButton(false);
-        } else {
-            updateMuteButton(true);
-        }
-    });
-    
-    muteBtn.addEventListener('click', () => {
-        if (audioElement.volume > 0) {
-            previousVolume = audioElement.volume;
-            audioElement.volume = 0;
-            volumeControl.value = 0;
-            volumeControl.style.setProperty('--volume', '0%');
-            updateMuteButton(true);
-        } else {
-            audioElement.volume = previousVolume;
-            volumeControl.value = previousVolume * 100;
-            volumeControl.style.setProperty('--volume', (previousVolume * 100) + '%');
-            updateMuteButton(false);
-        }
-    });
-    
-    // Initialize volume and visual indicators
-    audioElement.volume = 0.7;
-    previousVolume = 0.7;
-    volumeControl.value = 70;
-    volumeControl.style.setProperty('--volume', '70%');
-    seekBar.style.setProperty('--progress', '0%');
-    
-    audioElement.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        return false;
-    });
-    
-    audioElement.controlsList = 'nodownload';
-}
+    if (!audioElement.src || audioElement.src === '') {
+        selectRandomStory(themeIndex);
+    }
 
-function togglePlayPause() {
-    if (!audioElement.src) return;
-    
     if (audioElement.paused) {
         audioElement.play();
+        updatePlayPauseButton(themeIndex, true);
     } else {
         audioElement.pause();
+        updatePlayPauseButton(themeIndex, false);
     }
 }
 
-function updatePlayPauseButton(playing) {
-    const playIcon = document.querySelector('.play-icon');
-    const pauseIcon = document.querySelector('.pause-icon');
-    
+function updatePlayPauseButton(themeIndex, playing) {
+    const playBtn = document.getElementById(`play-${themeIndex}`);
+    if (!playBtn) return;
+
+    const playIcon = playBtn.querySelector('.play-icon');
+    const pauseIcon = playBtn.querySelector('.pause-icon');
+
     if (playing) {
         playIcon.classList.add('hidden');
         pauseIcon.classList.remove('hidden');
@@ -285,30 +336,32 @@ function updatePlayPauseButton(playing) {
     }
 }
 
-function updateMuteButton(muted) {
-    const volumeIcon = document.querySelector('.volume-icon');
-    const mutedIcon = document.querySelector('.muted-icon');
-    
-    if (muted) {
-        volumeIcon.classList.add('hidden');
-        mutedIcon.classList.remove('hidden');
-    } else {
-        volumeIcon.classList.remove('hidden');
-        mutedIcon.classList.add('hidden');
-    }
-}
+function setupPlayerControls() {
+    audioElement.addEventListener('play', () => {
+        if (!playStartTime) {
+            playStartTime = Date.now();
+        }
+        updatePlayPauseButton(currentThemeIndex, true);
+    });
 
-function stopPlayback() {
-    trackPlaytime();
-    audioElement.pause();
-    audioElement.src = '';
-    document.getElementById('audio-player').classList.add('hidden');
-    document.getElementById('current-title').textContent = 'Kein Titel ausgewählt';
-    document.getElementById('time-current').textContent = '0:00';
-    document.getElementById('time-total').textContent = '0:00';
-    updatePlayPauseButton(false);
-    currentTitle = null;
-    playStartTime = null;
+    audioElement.addEventListener('pause', () => {
+        trackPlaytime();
+        updatePlayPauseButton(currentThemeIndex, false);
+    });
+
+    audioElement.addEventListener('ended', () => {
+        trackPlaytime();
+        playNextStory(currentThemeIndex);
+    });
+
+    audioElement.volume = 0.7;
+
+    audioElement.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
+    audioElement.controlsList = 'nodownload';
 }
 
 function trackPlaytime() {
