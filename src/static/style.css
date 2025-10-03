@@ -302,132 +302,218 @@ main {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.2) 0%,
+        rgba(0,0,0,0.3) 30%,
+        rgba(0,0,0,0.5) 60%,
+        rgba(0,0,0,0.7) 100%
+    );
     z-index: 1;
 }
 
 .theme-content {
     position: relative;
     z-index: 2;
-    text-align: center;
-    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-6);
     padding: var(--space-8);
-    max-width: 600px;
+    max-width: 90%;
+    width: 100%;
 }
 
 .theme-name {
-    font-size: 3rem !important;
-    margin-bottom: var(--space-4);
+    font-size: clamp(2rem, 8vw, 3.5rem) !important;
     color: #FFFFFF !important;
-    text-shadow: 3px 3px 8px rgba(0,0,0,0.9);
-    font-weight: 700;
+    text-shadow:
+        0 2px 4px rgba(0,0,0,0.2),
+        0 4px 8px rgba(0,0,0,0.3),
+        0 8px 16px rgba(0,0,0,0.4);
+    font-weight: 800;
     line-height: 1.1;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin: 0;
 }
 
 .current-story {
-    font-size: 1.5rem !important;
-    margin-bottom: var(--space-10);
-    color: #FFFFFF !important;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+    font-size: clamp(1rem, 4vw, 1.5rem) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow:
+        0 1px 2px rgba(0,0,0,0.3),
+        0 2px 4px rgba(0,0,0,0.4);
     font-weight: 400;
     line-height: 1.4;
-    opacity: 0.95;
+    margin: 0;
+    padding: 0 var(--space-4);
+    max-width: 80%;
 }
 
 .player-controls {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-6);
     justify-content: center;
     align-items: center;
+    margin-top: var(--space-4);
 }
 
-.play-btn, .next-btn {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+/* Primary Play Button - Larger for main action */
+.play-btn {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     color: white;
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
+    min-width: 96px;
+    min-height: 96px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 5;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-.play-btn:hover, .next-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+.play-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.25));
+    transform: scale(1.05);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.2),
+        0 12px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.play-btn:active, .next-btn:active {
-    transform: scale(0.95);
-    background: rgba(255, 255, 255, 0.4);
+.play-btn:active {
+    transform: scale(0.98);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.play-btn svg, .next-btn svg {
-    width: 36px;
-    height: 36px;
+.play-btn svg {
+    width: 40px;
+    height: 40px;
     fill: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+/* Secondary Next Button - Smaller for secondary action */
 .next-btn {
-    width: 60px;
-    height: 60px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.12),
+        0 4px 16px rgba(0, 0, 0, 0.12);
+    color: white;
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 5;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.next-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.05);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.next-btn:active {
+    transform: scale(0.98);
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.15),
+        inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .next-btn svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+    fill: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
-/* Swipe Indicators */
+/* Swipe Indicators - Visual hints for navigation */
 .swipe-indicator {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 50px;
-    height: 50px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .swipe-indicator:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .swipe-indicator:active {
     transform: translateY(-50%) scale(0.95);
-    background: rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .swipe-indicator.left {
-    left: 20px;
+    left: 24px;
 }
 
 .swipe-indicator.right {
-    right: 20px;
+    right: 24px;
 }
 
 .swipe-indicator svg {
-    fill: white;
-    opacity: 0.8;
+    fill: rgba(255, 255, 255, 0.9);
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Removed Audio Player - Now integrated into theme cards */
@@ -853,26 +939,51 @@ main {
     }
 
     .play-btn {
-        width: 70px;
-        height: 70px;
+        width: 84px;
+        height: 84px;
+        min-width: 84px;
+        min-height: 84px;
+    }
+
+    .play-btn svg {
+        width: 36px;
+        height: 36px;
     }
 
     .next-btn {
-        width: 50px;
-        height: 50px;
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        min-height: 64px;
+    }
+
+    .next-btn svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .player-controls {
+        gap: var(--space-5);
     }
 
     .swipe-indicator {
-        width: 40px;
-        height: 40px;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
     }
 
     .swipe-indicator.left {
-        left: 10px;
+        left: 16px;
     }
 
     .swipe-indicator.right {
-        right: 10px;
+        right: 16px;
+    }
+
+    .swipe-indicator svg {
+        width: 20px;
+        height: 20px;
     }
 
     .admin-controls {
