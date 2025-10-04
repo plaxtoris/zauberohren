@@ -6,7 +6,7 @@ from fastapi import Response
 from typing import Optional
 
 class IconService:
-    def __init__(self, source_path: str = "src/static/logo.jpeg"):
+    def __init__(self, source_path: str = "src/static/logo.png"):
         self.source_path = Path(source_path)
         self._source_image: Optional[Image.Image] = None
     

@@ -29,11 +29,11 @@
         </div>
     </div>
 
-    <div id="admin-container" style="display: none;">
+    <div id="admin-container" style="display: none; background: var(--bg-secondary); overflow-y: auto; min-height: 100vh;">
         <header id="player-header">
             <div class="header-top">
                 <div class="logo-container">
-                    <img src="/static/logo.jpeg" alt="Zauberohren Logo" class="logo">
+                    <img src="/static/logo.png" alt="Zauberohren Logo" class="logo" loading="lazy">
                     <div class="title-container">
                         <h1>Zauberohren</h1>
                         <span class="subtitle">Admin Dashboard</span>
@@ -44,11 +44,11 @@
                     <span class="burger-line"></span>
                     <span class="burger-line"></span>
                 </button>
-                <nav class="header-links" id="nav-menu" role="navigation" aria-label="Admin Navigation">
-                    <a href="/" class="impressum-link">Home</a>
-                    <a href="/about" class="impressum-link">Über uns</a>
-                    <a href="/impressum" class="impressum-link">Impressum</a>
-                    <a href="#" id="logout-link" class="impressum-link">Logout</a>
+                <nav class="header-links" id="nav-menu" role="navigation" aria-label="Hauptnavigation">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/about" class="nav-link">Über uns</a>
+                    <a href="/impressum" class="nav-link">Impressum</a>
+                    <a href="#" id="logout-link" class="nav-link">Logout</a>
                 </nav>
             </div>
         </header>

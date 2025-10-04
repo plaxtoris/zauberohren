@@ -103,9 +103,22 @@ function renderThemeSlides() {
         slide.appendChild(textContent);
         slide.appendChild(controls);
 
-        // Add event listeners
-        playBtn.addEventListener('click', () => togglePlayPause(index));
-        nextBtn.addEventListener('click', () => playNextStory(index));
+        // Add event listeners (iOS-compatible touch + click)
+        const handlePlayTap = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            togglePlayPause(index);
+        };
+        const handleNextTap = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            playNextStory(index);
+        };
+
+        playBtn.addEventListener('touchend', handlePlayTap, {passive: false});
+        playBtn.addEventListener('click', handlePlayTap);
+        nextBtn.addEventListener('touchend', handleNextTap, {passive: false});
+        nextBtn.addEventListener('click', handleNextTap);
 
         return slide;
     };
@@ -186,16 +199,20 @@ function setupSwipeListeners() {
         isDragging = false;
     });
 
-    // Click indicators with stopPropagation
-    leftIndicator.addEventListener('click', (e) => {
+    // Touch and click handlers for indicators (iOS-compatible)
+    const handleIndicatorTap = (direction) => (e) => {
         e.stopPropagation();
-        navigateTheme(-1);
-    });
+        e.preventDefault();
+        navigateTheme(direction);
+    };
 
-    rightIndicator.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigateTheme(1);
-    });
+    // Left indicator
+    leftIndicator.addEventListener('touchend', handleIndicatorTap(-1), {passive: false});
+    leftIndicator.addEventListener('click', handleIndicatorTap(-1));
+
+    // Right indicator
+    rightIndicator.addEventListener('touchend', handleIndicatorTap(1), {passive: false});
+    rightIndicator.addEventListener('click', handleIndicatorTap(1));
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -206,8 +223,9 @@ function setupSwipeListeners() {
 
 function handleTouchStart(e) {
     // Ignore if touching buttons or controls
-    if (e.target.closest('.play-btn') || e.target.closest('.next-btn') ||
-        e.target.closest('.swipe-indicator')) {
+    const target = e.target.closest('.play-btn, .next-btn, .swipe-indicator');
+    if (target) {
+        // Don't interfere with button touches
         return;
     }
 

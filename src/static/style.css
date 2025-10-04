@@ -118,7 +118,7 @@ h6 { font-size: 0.875rem; }
 
 p {
     line-height: 1.6;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 
 a {
@@ -147,9 +147,9 @@ a:hover {
 #player-header {
     position: fixed;
     top: 0;
-    background: transparent;
-    backdrop-filter: blur(10px);
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
     z-index: 1000;
     height: var(--header-height);
     width: 100%;
@@ -211,12 +211,17 @@ a:hover {
     cursor: pointer;
     padding: 0;
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .burger-line {
@@ -413,11 +418,14 @@ main {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 5;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
 }
@@ -463,11 +471,14 @@ main {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 5;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
 }
@@ -502,19 +513,23 @@ main {
     background: linear-gradient(135deg, rgba(255, 167, 38, 0.6), rgba(255, 138, 0, 0.5));
     backdrop-filter: blur(12px) saturate(150%);
     border: 1px solid rgba(255, 167, 38, 0.4);
-    width: 72px;
-    height: 72px;
-    min-width: 72px;
-    min-height: 72px;
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    min-height: 80px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
     box-shadow:
@@ -631,13 +646,19 @@ main {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-button:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+
+.login-button:active {
+    transform: translateY(0);
 }
 
 /* Admin Login */
@@ -684,9 +705,10 @@ main {
 
 /* Admin Dashboard */
 .admin-main {
-    padding: var(--space-8) var(--space-6);
+    padding: calc(var(--header-height) + var(--space-8)) var(--space-6) var(--space-8);
     max-width: var(--max-width);
     margin: 0 auto;
+    min-height: 100vh;
 }
 
 .admin-controls {
@@ -717,19 +739,26 @@ main {
     border-radius: var(--radius-md);
     cursor: pointer;
     font-weight: 500;
-    color: var(--text-secondary);
-    transition: all var(--transition-fast);
+    color: var(--text-muted);
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 0.875rem;
 }
 
 .period-btn:hover {
     color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.03);
 }
 
 .period-btn.active {
     background: var(--bg-white);
     color: var(--primary-color);
     box-shadow: var(--shadow-sm);
+}
+
+.period-btn:active {
+    transform: scale(0.98);
 }
 
 .total-playtime {
@@ -802,12 +831,15 @@ main {
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     align-items: center;
-    transition: all var(--transition-fast);
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-item:hover {
     background: var(--primary-light);
     transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
 }
 
 .theme-rank {
@@ -858,12 +890,23 @@ main {
 /* Impressum Page */
 .impressum-content {
     max-width: 800px;
-    margin: 0 auto;
+    margin: calc(var(--header-height) + var(--space-6)) auto var(--space-6);
     background: var(--bg-white);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     padding: var(--space-10);
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .impressum-content h2 {
@@ -935,17 +978,24 @@ main {
         top: 100%;
         right: 0;
         left: 0;
-        background: var(--bg-white);
-        border-top: 1px solid var(--border-light);
-        box-shadow: var(--shadow-lg);
+        /* Stronger background to hide content underneath */
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(30px) saturate(150%);
+        -webkit-backdrop-filter: blur(30px) saturate(150%);
+        border-top: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: none;
         flex-direction: column;
-        gap: 0;
+        gap: var(--space-1);
         padding: var(--space-4);
         opacity: 0;
         visibility: hidden;
         transform: translateY(-10px);
-        transition: all 0.3s ease;
-        z-index: 1000;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;
+        border-radius: 0;
     }
 
     .header-links.active {
@@ -955,16 +1005,29 @@ main {
     }
 
     .header-links a {
-        padding: var(--space-3) var(--space-4);
-        font-size: 0.875rem;
+        padding: var(--space-4) var(--space-4);
+        font-size: 1rem;
         width: 100%;
         text-align: left;
         border-radius: var(--radius-md);
-        transition: background 0.2s ease;
+        transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                    color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        /* White color for dark glassmorphism background */
+        color: rgba(255, 255, 255, 0.95) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        font-weight: 500;
     }
 
     .header-links a:hover {
-        background: var(--bg-gray);
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--primary-color) !important;
+    }
+
+    .header-links a:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .theme-name {
@@ -1004,10 +1067,10 @@ main {
     }
 
     .swipe-indicator {
-        width: 48px;
-        height: 48px;
-        min-width: 48px;
-        min-height: 48px;
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        min-height: 56px;
     }
 
     .swipe-indicator.left {
@@ -1105,8 +1168,9 @@ main {
 
 /* Accessibility */
 :focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+    outline: 3px solid var(--primary-color);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(232, 184, 130, 0.2);
 }
 
 .sr-only {

@@ -10,11 +10,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icon/180.png">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body style="overflow-y: auto; background: var(--bg-secondary);">
     <header id="player-header">
         <div class="header-top">
             <div class="logo-container">
-                <img src="/static/logo.jpeg" alt="Zauberohren Logo" class="logo">
+                <img src="/static/logo.png" alt="Zauberohren Logo" class="logo" loading="lazy">
                 <div class="title-container">
                     <h1>Zauberohren</h1>
                     <span class="subtitle">Geschichten für dich</span>
@@ -26,10 +26,10 @@
                 <span class="burger-line"></span>
             </button>
             <nav class="header-links" id="nav-menu" role="navigation" aria-label="Hauptnavigation">
-                <a href="/" class="impressum-link">Home</a>
-                <a href="/about" class="impressum-link">Über uns</a>
-                <a href="/impressum" class="impressum-link">Impressum</a>
-                <a href="/admin" class="impressum-link">Login</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/about" class="nav-link">Über uns</a>
+                <a href="/impressum" class="nav-link">Impressum</a>
+                <a href="/admin" class="nav-link">Login</a>
             </nav>
         </div>
     </header>
