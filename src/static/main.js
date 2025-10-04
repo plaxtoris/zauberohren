@@ -206,12 +206,12 @@ function setupSwipeListeners() {
         navigateTheme(direction);
     };
 
-    // Left indicator
-    leftIndicator.addEventListener('touchend', handleIndicatorTap(-1), {passive: false});
+    // Left indicator - both touchstart and click for better iOS compatibility
+    leftIndicator.addEventListener('touchstart', handleIndicatorTap(-1), {passive: false});
     leftIndicator.addEventListener('click', handleIndicatorTap(-1));
 
-    // Right indicator
-    rightIndicator.addEventListener('touchend', handleIndicatorTap(1), {passive: false});
+    // Right indicator - both touchstart and click for better iOS compatibility
+    rightIndicator.addEventListener('touchstart', handleIndicatorTap(1), {passive: false});
     rightIndicator.addEventListener('click', handleIndicatorTap(1));
 
     // Keyboard navigation

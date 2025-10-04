@@ -521,17 +521,18 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 100;
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(255, 167, 38, 0.2);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    pointer-events: auto;
     box-shadow:
         0 2px 8px rgba(255, 138, 0, 0.25),
         0 4px 16px rgba(255, 138, 0, 0.2);
