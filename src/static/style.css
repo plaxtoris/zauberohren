@@ -1,6 +1,6 @@
 @font-face {
-    font-family: 'Mulan';
-    src: url('/data/mulan.ttf') format('truetype');
+    font-family: 'Cinzel';
+    src: url('/static/font.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -59,7 +59,7 @@
     /* Typography */
     --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-    --font-mulan: 'Mulan', cursive, sans-serif;
+    --font-cinzel: 'Cinzel', serif;
 
     /* Spacing */
     --space-1: 0.25rem;
@@ -181,14 +181,23 @@ a:hover {
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    display: block;
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 .title-container h1 {
     font-size: 1.5rem;
     font-weight: 400;
     color: var(--primary-color);
-    font-family: var(--font-mulan);
+    font-family: var(--font-cinzel);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1;
+    margin: 0;
 }
 
 .subtitle {
@@ -299,11 +308,12 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-color: #333;
+    padding: 0;
 }
 
 .theme-slide::before {
@@ -323,18 +333,18 @@ main {
     z-index: 1;
 }
 
-.theme-content {
+.theme-text-content {
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-6);
+    justify-content: center;
+    gap: var(--space-4);
     padding: var(--space-8);
     padding-top: calc(var(--header-height) + var(--space-12));
-    max-width: 95%;
     width: 100%;
+    flex: 0 0 auto;
 }
 
 .theme-name {
@@ -351,8 +361,9 @@ main {
     letter-spacing: 0.02em;
     text-transform: uppercase;
     margin: 0;
-    font-family: var(--font-mulan);
+    font-family: var(--font-cinzel);
     text-align: center;
+    width: 100%;
 }
 
 .current-story {
@@ -364,18 +375,23 @@ main {
     font-weight: 400;
     line-height: 1.4;
     margin: 0;
-    padding: 0 var(--space-4);
-    max-width: 90%;
-    font-family: var(--font-mulan);
+    padding: 0 var(--space-6);
+    width: 100%;
+    font-family: var(--font-cinzel);
     text-align: center;
 }
 
 .player-controls {
+    position: relative;
+    z-index: 2;
     display: flex;
     gap: var(--space-6);
     justify-content: center;
     align-items: center;
-    margin-top: var(--space-8);
+    padding: var(--space-8);
+    padding-bottom: calc(var(--space-12) + var(--space-8));
+    width: 100%;
+    flex: 0 0 auto;
 }
 
 /* Primary Play Button - Larger for main action */

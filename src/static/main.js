@@ -56,8 +56,8 @@ function renderThemeSlides() {
         const imagePath = `/data/${theme}/image.jpg`;
         slide.style.backgroundImage = `url('${imagePath}')`;
 
-        const content = document.createElement('div');
-        content.className = 'theme-content';
+        const textContent = document.createElement('div');
+        textContent.className = 'theme-text-content';
 
         const nameEl = document.createElement('h2');
         nameEl.className = 'theme-name';
@@ -67,6 +67,9 @@ function renderThemeSlides() {
         storyEl.className = 'current-story';
         storyEl.id = `story-${index}`;
         storyEl.textContent = 'Geschichte wird geladen...';
+
+        textContent.appendChild(nameEl);
+        textContent.appendChild(storyEl);
 
         const controls = document.createElement('div');
         controls.className = 'player-controls';
@@ -97,11 +100,8 @@ function renderThemeSlides() {
         controls.appendChild(playBtn);
         controls.appendChild(nextBtn);
 
-        content.appendChild(nameEl);
-        content.appendChild(storyEl);
-        content.appendChild(controls);
-
-        slide.appendChild(content);
+        slide.appendChild(textContent);
+        slide.appendChild(controls);
 
         // Add event listeners
         playBtn.addEventListener('click', () => togglePlayPause(index));
