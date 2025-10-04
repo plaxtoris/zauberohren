@@ -200,19 +200,32 @@ function setupSwipeListeners() {
     });
 
     // Touch and click handlers for indicators (iOS-compatible)
-    const handleIndicatorTap = (direction) => (e) => {
+    let indicatorTouchHandled = false;
+
+    const handleIndicatorTouchStart = (direction) => (e) => {
         e.stopPropagation();
         e.preventDefault();
+        indicatorTouchHandled = true;
         navigateTheme(direction);
     };
 
-    // Left indicator - both touchstart and click for better iOS compatibility
-    leftIndicator.addEventListener('touchstart', handleIndicatorTap(-1), {passive: false});
-    leftIndicator.addEventListener('click', handleIndicatorTap(-1));
+    const handleIndicatorClick = (direction) => (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        // Only handle click if touch wasn't already handled
+        if (!indicatorTouchHandled) {
+            navigateTheme(direction);
+        }
+        indicatorTouchHandled = false;
+    };
 
-    // Right indicator - both touchstart and click for better iOS compatibility
-    rightIndicator.addEventListener('touchstart', handleIndicatorTap(1), {passive: false});
-    rightIndicator.addEventListener('click', handleIndicatorTap(1));
+    // Left indicator
+    leftIndicator.addEventListener('touchstart', handleIndicatorTouchStart(-1), {passive: false});
+    leftIndicator.addEventListener('click', handleIndicatorClick(-1));
+
+    // Right indicator
+    rightIndicator.addEventListener('touchstart', handleIndicatorTouchStart(1), {passive: false});
+    rightIndicator.addEventListener('click', handleIndicatorClick(1));
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -225,7 +238,8 @@ function handleTouchStart(e) {
     // Ignore if touching buttons or controls
     const target = e.target.closest('.play-btn, .next-btn, .swipe-indicator');
     if (target) {
-        // Don't interfere with button touches
+        // Don't interfere with button touches - stop propagation completely
+        e.stopPropagation();
         return;
     }
 
