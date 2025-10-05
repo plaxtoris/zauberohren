@@ -581,30 +581,30 @@ main {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-primary);
+    color: #1F2937;
     margin-bottom: var(--space-2);
 }
 
 .form-group input {
     width: 100%;
     padding: var(--space-3) var(--space-4);
-    border: 2px solid var(--border-color);
+    border: 2px solid #E5E7EB;
     border-radius: var(--radius-lg);
     font-size: 1rem;
     transition: all var(--transition-fast);
-    background: var(--bg-white);
-    color: var(--text-primary);
+    background: #FFFFFF;
+    color: #1F2937;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(91, 99, 245, 0.1);
+    border-color: #E8B882;
+    box-shadow: 0 0 0 3px rgba(232, 184, 130, 0.1);
 }
 
 .form-group input:disabled {
-    background: var(--bg-secondary);
-    color: var(--text-muted);
+    background: #F9FAFB;
+    color: #6B7280;
     cursor: not-allowed;
 }
 
@@ -641,8 +641,8 @@ main {
 .login-button {
     width: 100%;
     padding: var(--space-3) var(--space-6);
-    background: var(--primary-color);
-    color: var(--text-white);
+    background: #E8B882;
+    color: #FFFFFF;
     border: none;
     border-radius: var(--radius-lg);
     font-size: 1rem;
@@ -654,9 +654,9 @@ main {
 }
 
 .login-button:hover {
-    background: var(--primary-hover);
+    background: #D4A770;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
 
 .login-button:active {
@@ -669,15 +669,15 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    background: #111827;
     padding: var(--space-6);
 }
 
 .login-box {
-    background: var(--bg-white);
+    background: #FFFFFF;
     padding: var(--space-10);
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-2xl);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 420px;
     animation: slideUp 0.3s ease;
@@ -692,7 +692,7 @@ main {
     text-align: center;
     margin-bottom: var(--space-8);
     font-size: 1.75rem;
-    color: var(--text-primary);
+    color: #1F2937;
 }
 
 .error-message {
