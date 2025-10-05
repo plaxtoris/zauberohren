@@ -1,2 +1,2 @@
 # zauberohren
-A user-friendly web app for AI-generated children's storiesWiederholen
+A user-friendly web app for AI-generated children's stories.
