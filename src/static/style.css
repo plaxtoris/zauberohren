@@ -99,7 +99,6 @@ body {
     color: var(--text-primary);
     background: var(--bg-primary);
     min-height: 100vh;
-    overflow: hidden;
 }
 
 /* Typography */
@@ -289,6 +288,16 @@ main {
     right: 0;
     bottom: 0;
     overflow: hidden;
+}
+
+main.player-main {
+    overflow: hidden;
+}
+
+main.admin-main {
+    position: static;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Theme Carousel */
@@ -857,10 +866,14 @@ main {
     font-size: 1.125rem;
 }
 
-.theme-name {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 1rem;
+.theme-item .theme-name {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .theme-stats-wrapper {
