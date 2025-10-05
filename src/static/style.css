@@ -931,7 +931,7 @@ main {
 }
 
 .impressum-content p {
-    color: var(--text-secondary);
+    color: #000000;
     line-height: 1.7;
     margin-bottom: var(--space-3);
 }
