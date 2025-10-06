@@ -52,4 +52,5 @@ if __name__ == "__main__":
 
     count_data()
     clean_data()
+
     print(f"\n>>> runtime {(time.time() - t0):.1f} sec\n\n")
