@@ -2,17 +2,83 @@
 <html lang="de">
 <head>
 
-    <!-- google adsense-->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9132200753480301"
-        crossorigin="anonymous"></script>
-
-    <!-- google analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N683YEPLY8"></script>
+    <!-- Cookie Consent & Analytics - wird nur nach Zustimmung geladen -->
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-N683YEPLY8');
+    // Cookie-Banner Verwaltung
+    (function() {
+        const COOKIE_NAME = 'zauberohren_cookie_consent';
+        const COOKIE_DURATION = 365; // Tage
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+        }
+
+        function loadAnalytics() {
+            // Google Analytics laden
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-N683YEPLY8';
+            document.head.appendChild(gaScript);
+
+            gaScript.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-N683YEPLY8', {
+                    'anonymize_ip': true,
+                    'cookie_flags': 'SameSite=Lax;Secure'
+                });
+            };
+
+            // Google AdSense laden
+            const adsScript = document.createElement('script');
+            adsScript.async = true;
+            adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9132200753480301';
+            adsScript.crossOrigin = 'anonymous';
+            document.head.appendChild(adsScript);
+        }
+
+        function showBanner() {
+            const banner = document.getElementById('cookie-banner');
+            if (banner) banner.style.display = 'flex';
+        }
+
+        function hideBanner() {
+            const banner = document.getElementById('cookie-banner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        // Prüfe beim Laden der Seite
+        window.addEventListener('DOMContentLoaded', function() {
+            const consent = getCookie(COOKIE_NAME);
+
+            if (consent === 'accepted') {
+                loadAnalytics();
+            } else if (!consent) {
+                showBanner();
+            }
+        });
+
+        // Globale Funktionen für Button-Clicks
+        window.acceptCookies = function() {
+            setCookie(COOKIE_NAME, 'accepted', COOKIE_DURATION);
+            hideBanner();
+            loadAnalytics();
+        };
+
+        window.declineCookies = function() {
+            setCookie(COOKIE_NAME, 'declined', COOKIE_DURATION);
+            hideBanner();
+        };
+    })();
     </script>
 
     <meta charset="UTF-8">
@@ -77,6 +143,76 @@
         .header-links { display: flex; align-items: center; gap: 1rem; }
         .header-links a { color: rgba(255, 255, 255, 0.9); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
         @media (max-width: 768px) { .burger-menu { display: flex; } .header-links { display: none; } }
+
+        /* Cookie Banner */
+        #cookie-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(31, 41, 55, 0.98);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 1rem;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            flex-direction: column;
+            gap: 0.75rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        #cookie-banner-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        #cookie-banner p {
+            margin: 0 0 0.75rem 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        #cookie-banner a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+        .cookie-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .cookie-btn {
+            padding: 0.6rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .cookie-btn-accept {
+            background: var(--primary-color);
+            color: #1F2937;
+        }
+        .cookie-btn-accept:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .cookie-btn-decline {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .cookie-btn-decline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        @media (max-width: 768px) {
+            #cookie-banner { padding: 0.875rem; }
+            #cookie-banner p { font-size: 0.85rem; }
+            .cookie-buttons { flex-direction: column; }
+            .cookie-btn { width: 100%; padding: 0.75rem; }
+        }
     </style>
     
     <link rel="manifest" href="/static/manifest.json">
@@ -174,7 +310,23 @@
     </script>
     
     <audio id="audio-element" preload="metadata"></audio>
-    
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner">
+        <div id="cookie-banner-content">
+            <p>
+                <strong>Diese Website verwendet Cookies</strong><br>
+                Wir nutzen Google Analytics und Google AdSense, um unsere Website zu verbessern.
+                Durch die Nutzung dieser Dienste werden Cookies auf Ihrem Gerät gespeichert.
+                Weitere Informationen finden Sie in unserer <a href="/impressum#datenschutz">Datenschutzerklärung</a>.
+            </p>
+            <div class="cookie-buttons">
+                <button class="cookie-btn cookie-btn-accept" onclick="acceptCookies()">Alle akzeptieren</button>
+                <button class="cookie-btn cookie-btn-decline" onclick="declineCookies()">Nur notwendige</button>
+            </div>
+        </div>
+    </div>
+
     <script defer src="/static/utils.js"></script>
     <script defer src="/static/burger-menu.js"></script>
     <script defer src="/static/main.js"></script>

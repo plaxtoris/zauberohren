@@ -30,7 +30,7 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "--port",
-                "88"
+                "89"
             ]
         }
     ]
